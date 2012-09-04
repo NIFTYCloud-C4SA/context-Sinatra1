@@ -1,0 +1,162 @@
+{
+    "name": "sinatra",
+        "version": "1.0.0",
+        "category": { "language": "ruby", "framework": "sinatra", "priority": 0 },
+        "ui-name": "Sinatra",
+        "ui-summary": "sinatra",
+        "description": "Sinatra は、Ruby 言語で書かれた DSLです。キャンバスを作成し、手軽にWebアプリケーションを開発することが可能です。",
+        "description-url": "http://www.sinatrarb.com/",
+        "parameters": {
+            "mysql_password": { "type": "string",
+                "restr": "[0-9A-Za-z]{8,16}",
+                "auto": "[0-9A-Za-z]{8}" },
+            "webdav_password": { "type": "string",
+                "restr": "[0-9A-Za-z]{8,16}",
+                "auto": "[0-9A-Za-z]{8}" }
+        },
+        "context_resources": ["web_root.tar.gz", "nginx.conf"],
+        "canvas_version": "1.0.0",
+        "instruction": [
+        { "type": "appliance",
+            "appliance_name": "logviewer.local",
+            "appliance_id": "logviewer_id",
+            "state": { }
+        },
+        { "type": "appliance",
+            "appliance_name": "db.mysql.shared",
+            "appliance_id": "mysql_id",
+            "state": {
+                "password": { "type": "variable",
+                    "name": "mysql_password" },
+                "tier": ["20"]
+            }
+        },
+        { "type": "appliance",
+            "appliance_name": "disk.shared",
+            "appliance_id": "disk_id",
+            "state": {
+                "passwd": { "type": "variable",
+                    "name": "webdav_password" }
+            }
+        },
+        { "type": "signal",
+            "appliance_id": "disk_id",
+            "signal": "install",
+            "in": {
+                "type": "archive",
+                "resource": "web_root.tar.gz"
+            }
+        },
+        { "type": "appliance",
+            "appliance_name": "interpreter.ruby",
+            "appliance_id": "ruby_id",
+            "state": {
+                "version": "1.9.3-p194",
+                "env_ids": []
+            }
+        },
+        { "type": "appliance",
+            "appliance_name": "interpreter.ruby.bundler",
+            "appliance_id": "bundler_id",
+            "state": {
+                "interpreter_id": "ruby_id",
+                "env_ids": [],
+                "project_root": { "type": "template_string",
+                    "template": "/canvases/${canvas_id}/data/${disk_id}/project" }
+            }
+        },
+        { "type": "appliance",
+            "appliance_name": "util.env-manager",
+            "appliance_id": "env_id",
+            "state": {
+                "env_ids": ["mysql_id"],
+                "envs": []
+            }
+        },
+        { "type": "appliance",
+            "appliance_name": "supervisor.local",
+            "appliance_id": "supervisor_id",
+            "state": {
+                "ini" : "",
+                "env_ids": []
+            }
+        },
+        { "type": "appliance",
+            "appliance_name": "daemon.ruby.unicorn",
+            "appliance_id": "unicorn_id",
+            "state": {
+		"supervisor_id": "supervisor_id",
+                "interpreter_id": "ruby_id",
+                "env_ids": ["env_id"],
+                "project_root": { "type": "template_string",
+                    "template": "/canvases/${canvas_id}/data/${disk_id}/project" },
+                "use_bundler": true,
+                "environment": "production",
+                "workers": 1,
+                "config": ""
+            }
+        },
+        {
+            "type": "signal",
+            "appliance_id": "bundler_id",
+            "signal": "command",
+            "in": {
+                "action": "install",
+                "argv": "--path vendor/bundle"
+            }
+        },
+        { "type": "appliance",
+            "appliance_name": "terminal.shell",
+            "appliance_id": "shell_id",
+            "state": {
+                "commands": ["/bin/ls", "/bin/cat", "/usr/bin/git"],
+		"supervisor_id": "supervisor_id",
+                "working_directory": { "type": "template_string",
+                    "template": "/canvases/${canvas_id}/data/${disk_id}/project" },
+                "env_ids": ["env_id","ruby_id", "bundler_id", "supervisor_id"]
+            }
+        },
+        { "type": "appliance",
+            "appliance_name": "http-server.nginx",
+            "appliance_id": "http_id",
+            "state": {
+		"supervisor_id": "supervisor_id",
+		"hosts": {
+                    "http_conf_id": {
+			"type": "custom_template",
+			"nginx_conf": { "type": "file",
+					"file": "nginx.conf" },
+			"variables": {
+                            "disk_id": "disk_id",
+                            "unicorn_id": "unicorn_id"
+			}
+                    }
+		}
+            }
+        },
+        {
+            "type": "signal",
+            "appliance_id": "supervisor_id",
+            "signal": "supervisorctl",
+            "in": {
+                "action": "reload",
+                "process": ""
+            }
+        },
+        { "type": "appliance",
+            "appliance_name": "gateway.local",
+            "appliance_id": "gateway_id",
+            "state": {
+                "admin_settings": [{ "id": "shell_id", "type": "standard" },
+                { "id": "disk_id", "type": "webdav" }],
+                "server_settings": [
+                {
+                    "server_name_id": "http_conf_id",
+                    "server_names": [],
+                    "socket_id": "http_id"
+                }
+                ]
+            }
+        }
+    ]
+}
