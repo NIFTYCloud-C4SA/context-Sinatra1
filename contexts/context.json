@@ -1,5 +1,5 @@
 {
-    "name": "Sinatra",
+    "name": "Sinatra1",
         "version": "1.0.0",
         "category": { "language": "ruby", "framework": "sinatra", "priority": 0 },
         "ui-name": "Sinatra1",
