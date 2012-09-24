@@ -62,7 +62,7 @@
                 "interpreter_id": "ruby_id",
                 "env_ids": [],
                 "project_root": { "type": "template_string",
-                    "template": "/canvases/${canvas_id}/data/${disk_id}/rails_app" }
+                    "template": "/canvases/${canvas_id}/data/${disk_id}/project" }
             }
         },
         { "type": "appliance",
@@ -89,7 +89,7 @@
                 "interpreter_id": "ruby_id",
                 "env_ids": ["env_id"],
                 "project_root": { "type": "template_string",
-                    "template": "/canvases/${canvas_id}/data/${disk_id}/rails_app" },
+                    "template": "/canvases/${canvas_id}/data/${disk_id}/project" },
                 "use_bundler": true,
                 "environment": "production",
                 "workers": 1,
@@ -112,7 +112,7 @@
                 "commands": ["/bin/ls", "/bin/cat", "/usr/bin/git"],
 		"supervisor_id": "supervisor_id",
                 "working_directory": { "type": "template_string",
-                    "template": "/canvases/${canvas_id}/data/${disk_id}/rails_app" },
+                    "template": "/canvases/${canvas_id}/data/${disk_id}/project" },
                 "env_ids": ["env_id","ruby_id", "bundler_id", "supervisor_id"]
             }
         },

@@ -1,3 +1,0 @@
-[submodule "contexts/krm/docroot"]
-	path = contexts/krm/docroot
-	url = https://github.com/sinatra/sinatra.git

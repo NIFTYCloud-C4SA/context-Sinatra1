@@ -13,7 +13,5 @@ Desktop.ini
 $RECYCLE.BIN/
 
 # Sinatra
-contexts/krm/docroot/*
-!contexts/krm/docroot/.gitkeep
 contexts/krm/docroot.tar.gz
 contexts/krm.tar.gz
