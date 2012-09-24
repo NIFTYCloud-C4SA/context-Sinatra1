@@ -1,11 +1,11 @@
 {
-    "name": "sinatra",
+    "name": "Sinatra",
         "version": "1.0.0",
         "category": { "language": "ruby", "framework": "sinatra", "priority": 0 },
-        "ui-name": "Sinatra",
-        "ui-summary": "sinatra",
-        "description": "Sinatra は、Ruby 言語で書かれた DSLです。キャンバスを作成し、手軽にWebアプリケーションを開発することが可能です。",
-        "description-url": "http://www.sinatrarb.com/",
+        "ui-name": "Sinatra1",
+        "ui-summary": "sinatra_v1.3.3",
+        "description": "Sinatra1 は、Ruby 言語で書かれた Web アプリケーションフレームワークです。",
+        "description-url": null,
         "parameters": {
             "mysql_password": { "type": "string",
                 "restr": "[0-9A-Za-z]{8,16}",
@@ -14,7 +14,7 @@
                 "restr": "[0-9A-Za-z]{8,16}",
                 "auto": "[0-9A-Za-z]{8}" }
         },
-        "context_resources": ["web_root.tar.gz", "nginx.conf"],
+        "context_resources": ["docroot.tar.gz", "nginx.conf"],
         "canvas_version": "1.0.0",
         "instruction": [
         { "type": "appliance",
@@ -44,7 +44,7 @@
             "signal": "install",
             "in": {
                 "type": "archive",
-                "resource": "web_root.tar.gz"
+                "resource": "docroot.tar.gz"
             }
         },
         { "type": "appliance",
@@ -62,7 +62,7 @@
                 "interpreter_id": "ruby_id",
                 "env_ids": [],
                 "project_root": { "type": "template_string",
-                    "template": "/canvases/${canvas_id}/data/${disk_id}/project" }
+                    "template": "/canvases/${canvas_id}/data/${disk_id}/rails_app" }
             }
         },
         { "type": "appliance",
@@ -89,7 +89,7 @@
                 "interpreter_id": "ruby_id",
                 "env_ids": ["env_id"],
                 "project_root": { "type": "template_string",
-                    "template": "/canvases/${canvas_id}/data/${disk_id}/project" },
+                    "template": "/canvases/${canvas_id}/data/${disk_id}/rails_app" },
                 "use_bundler": true,
                 "environment": "production",
                 "workers": 1,
@@ -112,7 +112,7 @@
                 "commands": ["/bin/ls", "/bin/cat", "/usr/bin/git"],
 		"supervisor_id": "supervisor_id",
                 "working_directory": { "type": "template_string",
-                    "template": "/canvases/${canvas_id}/data/${disk_id}/project" },
+                    "template": "/canvases/${canvas_id}/data/${disk_id}/rails_app" },
                 "env_ids": ["env_id","ruby_id", "bundler_id", "supervisor_id"]
             }
         },

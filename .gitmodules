@@ -1,0 +1,3 @@
+[submodule "contexts/krm/project"]
+	path = contexts/krm/project
+	url = https://github.com/sinatra/sinatra.git
